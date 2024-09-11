@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AJAX Example</title>
+    <script>
+        function checkEmployee() {
+            var employeeName = document.getElementById("employeeName").value;
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "http://localhost:8089/Employee/EmployeeServlet?name=" + employeeName, true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    alert(response.message);
+                }
+            };
+            xhr.send();
+        }
+    </script>
+</head>
+<body>
+    <h1>Check Employee</h1>
+    <input type="text" id="employeeName" placeholder="Enter employee name">
+    <button onclick="checkEmployee()">Check</button>
+</body>
+</html>
+
+
+
+
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+@WebServlet("/EmployeeServlet")
+public class EmployeeServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("application/json");
+        String employeeName = request.getParameter("name");
+
+        JSONArray employees = new JSONArray();
+        JSONObject employee1 = new JSONObject();
+        employee1.put("name", "John");
+        employee1.put("email", "john.doe@mail.com");
+        employees.put(employee1);
+
+        JSONObject employee2 = new JSONObject();
+        employee2.put("name", "Jane");
+        employee2.put("email", "jane.doe@mail.com");
+        employees.put(employee2);
+
+        boolean userExists = false;
+        for (int i = 0; i < employees.length(); i++) {
+            if (employees.getJSONObject(i).getString("name").equalsIgnoreCase(employeeName)) {
+                userExists = true;
+                break;
+            }
+        }
+
+        JSONObject result = new JSONObject();
+        if (userExists) {
+            result.put("message", "User Exists");
+        } else {
+            result.put("message", "User does not exist");
+        }
+
+        response.getWriter().write(result.toString());
+    }
+}
+
+
+
+
+
+
+--------------------------------------------------------------------------------------------
+package servlet2;
+
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
+import org.json.JSONObject;
+
+/**
+ * Servlet implementation class MyServlet
+ */
+@WebServlet("/service/employees")
+public class EmployeeServlet extends HttpServlet {
+	// private static final long serialVersionUID = 1L;
+
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public EmployeeServlet() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		// TODO Auto-generated method stub
+		// response.getWriter().append("Served at: ").append(request.getContextPath());
+		response.setContentType("application/json");
+		JSONObject employee1 = new JSONObject();
+		
+		employee1.put("name", "John");
+		employee1.put("email", "john.doe@mail.com");
+
+		JSONObject employee2 = new JSONObject();
+		employee2.put("name", "Harry");
+		employee2.put("email", "harry.harry@mail.com");
+
+		JSONObject employee3 = new JSONObject();
+		employee3.put("name", "Jerry");
+		employee3.put("email", "jerry.doe@mail.com");
+
+		JSONObject employees = new JSONObject();
+		employees.put("employees", new Object[] { employee1, employee2, employee3 });
+
+		
+		
+		//TODO - check the employees JSON if the passed "name" exist or not
+		
+		PrintWriter out = response.getWriter();
+		out.println(employees.toString());
+		out.close();
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
+
+}
