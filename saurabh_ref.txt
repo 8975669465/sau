@@ -1,33 +1,4 @@
-https://meet.google.com/abq-wncm-bbv
-
-<!DOCTYPE html>
-<html>
-<head>
-    <title>AJAX Example</title>
-    <script>
-        function checkEmployee() {
-            var employeeName = document.getElementById("employeeName").value;
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", "http://localhost:8089/Employee/EmployeeServlet?name=" + employeeName, true);
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4 && xhr.status == 200) {
-                    var response = JSON.parse(xhr.responseText);
-                    alert(response.message);
-                }
-            };
-            xhr.send();
-        }
-    </script>
-</head>
-<body>
-    <h1>Check Employee</h1>
-    <input type="text" id="employeeName" placeholder="Enter employee name">
-    <button onclick="checkEmployee()">Check</button>
-</body>
-</html>
-
-
-
+package servlet2;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -35,29 +6,42 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-@WebServlet("/EmployeeServlet")
+
+@WebServlet("/service/employees")
 public class EmployeeServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+	// private static final long serialVersionUID = 1L;
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("application/json");
-        String employeeName = request.getParameter("name");
+	
+	public EmployeeServlet() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
-        JSONArray employees = new JSONArray();
-        JSONObject employee1 = new JSONObject();
-        employee1.put("name", "John");
-        employee1.put("email", "john.doe@mail.com");
-        employees.put(employee1);
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		// TODO Auto-generated method stub
+		// response.getWriter().append("Served at: ").append(request.getContextPath());
+		response.setContentType("application/json");
+		String employeeName = request.getParameter("name");
+		JSONArray employees = new JSONArray();
+		
+		JSONObject employee1 = new JSONObject();
+		employee1.put("name", "John");
+		employee1.put("email", "john.doe@mail.com");
 
-        JSONObject employee2 = new JSONObject();
-        employee2.put("name", "Jane");
-        employee2.put("email", "jane.doe@mail.com");
-        employees.put(employee2);
+		JSONObject employee2 = new JSONObject();
+		employee2.put("name", "Harry");
+		employee2.put("email", "harry.harry@mail.com");
 
-        boolean userExists = false;
+		JSONObject employee3 = new JSONObject();
+		employee3.put("name", "Jerry");
+		employee3.put("email", "jerry.doe@mail.com");
+		
+		boolean userExists = false;
         for (int i = 0; i < employees.length(); i++) {
             if (employees.getJSONObject(i).getString("name").equalsIgnoreCase(employeeName)) {
                 userExists = true;
@@ -68,20 +52,22 @@ public class EmployeeServlet extends HttpServlet {
         JSONObject result = new JSONObject();
         if (userExists) {
             result.put("message", "User Exists");
+            response.getWriter().write(result.toString());
+            
         } else {
             result.put("message", "User does not exist");
+            response.getWriter().write(result.toString());
         }
 
-        response.getWriter().write(result.toString());
     }
 }
 
 
 
+--------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
---------------------------------------------------------------------------------------------
 package servlet2;
 
 import java.io.IOException;
@@ -143,3 +129,41 @@ public class EmployeeServlet extends HttpServlet {
 	}
 
 }
+
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.example</groupId>
+  <artifactId>Employee</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>war</packaging>
+  
+  <dependencies>
+<dependency>
+    <groupId>org.json</groupId>
+    <artifactId>json</artifactId>
+    <version>20220924</version>
+</dependency>
+</dependencies>
+
+<build>
+  <plugins>
+  <plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-compiler-plugin</artifactId>
+  <version>3.13.0</version>
+  <configuration>
+  <source>1.8</source>
+  <target>1.8</target>
+  
+  </configuration>
+  </plugin></plugins>
+  </build>
+
+</project>
